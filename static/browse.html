@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>dj taytay</title>
+  </head>
+  <body>
+    <div id="app">
+
+      <div id="header" class="container">
+        <h1>dj taytay</h1>
+        <div id="error" class="alert alert-danger" role="alert" v-show="error" v-on:click="error=''">
+          {{ error }}
+        </div>
+      </div>
+
+      <div id="body" class="container">
+        <div id="browser">
+          <ul>
+            <li v-for="file in files">
+              <a v-on:click="playOrBrowse(file)">{{ file.name }}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="footer" class="container">
+        <div class="player" v-if="current_track">
+          <audio controls class="player" v-on:loadstart="handlePlayer()">
+            <source v-bind:src="'/play?path=' + current_track" type="audio/webm">
+          </audio>
+        </div>
+      </div>
+    </div>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

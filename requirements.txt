@@ -1,0 +1,13 @@
+aniso8601==8.0.0
+Click==7.0
+ffmpeg-python==0.2.0
+Flask==1.1.1
+Flask-RESTful==0.3.7
+future==0.17.1
+itsdangerous==1.1.0
+Jinja2==2.10.1
+MarkupSafe==1.1.1
+pkg-resources==0.0.0
+pytz==2019.2
+six==1.12.0
+Werkzeug==0.16.0
