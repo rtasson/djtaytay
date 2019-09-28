@@ -39,7 +39,7 @@ def get_complete_path(path, root):
     if os.path.commonpath([abs_path, root]) != root:
         err_msg = "Path {} is not in {}".format(path, root)
         ex = ValueError()
-        Ex.strerror = err_msg
+        ex.strerror = err_msg
         raise ex
 
     return abs_path
@@ -70,11 +70,15 @@ def transcode(path):
             process.poll()
             if process.returncode == None:
                 continue
+            elif process.returncode != 0:
+                # TODO: Do something better here :(
+                return
             else:
                 file.close()
                 os.remove(tmp)
                 break
         yield data
+    os.remove(tmp)
 
 def directory_listing(path):
     """directory_listing(path)
