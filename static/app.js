@@ -1,7 +1,16 @@
+Vue.component('error', {
+  props: ['message'],
+  template: `
+    <div id="error" class="alert alert-danger" role="alert" v-show="message">
+      {{ message }}
+    </div>
+  `
+})
+
 Vue.component('player', {
   props: ['track'],
   template: `
-    <audio controls class="player" v-on:loadstart="handlePlayer()">
+    <audio controls class="player" v-on:loadstart="handlePlayer()" v-if="track">
       <source v-bind:src="'/play?path=' + track" type="audio/webm">
     </audio>
   `,

@@ -1,32 +1,36 @@
 <html>
   <head>
     <title>dj taytay</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/base.css">
   </head>
   <body>
     <div id="app">
 
-      <div id="header" class="container">
-        <h1>dj taytay</h1>
-        <div id="error" class="alert alert-danger" role="alert" v-show="error" v-on:click="error=''">
-          {{ error }}
-        </div>
-      </div>
+      <header>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+          <a class="navbar-brand" href="#">dj taytay</a>
+        </nav>
+      </header>
 
-      <div id="body" class="container">
+      <main class="container" role="main">
+        <!-- TODO: emit a custom event below instead of v-on:click.native -->
+        <error v-bind:message="error" v-on:click.native="error=''"></error>
         <div id="browser">
           <ul>
             <file v-for="file in files" v-bind:file="file"></file>
           </ul>
         </div>
-      </div>
+      </main>
 
-      <div id="footer" class="container">
-        <div class="player" v-if="current_track">
-          <player v-bind:track="current_track"></track>
+      <footer class="footer">
+        <div class="container">
+          <div class="player">
+            <player v-bind:track="current_track"></track>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- development version, includes helpful console warnings -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="app.js"></script>
