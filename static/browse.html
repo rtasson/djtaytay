@@ -15,18 +15,14 @@
       <div id="body" class="container">
         <div id="browser">
           <ul>
-            <li v-for="file in files">
-              <a v-on:click="playOrBrowse(file)">{{ file.name }}</a>
-            </li>
+            <file v-for="file in files" v-bind:file="file"></file>
           </ul>
         </div>
       </div>
 
       <div id="footer" class="container">
         <div class="player" v-if="current_track">
-          <audio controls class="player" v-on:loadstart="handlePlayer()">
-            <source v-bind:src="'/play?path=' + current_track" type="audio/webm">
-          </audio>
+          <player v-bind:track="current_track"></track>
         </div>
       </div>
     </div>
