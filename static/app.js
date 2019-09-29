@@ -36,9 +36,19 @@ Vue.component('player', {
 Vue.component('file', {
   props: ['file'],
   template: `
-           <li>
-              <a v-on:click="$emit('queue', file.path)">[queue]</a>
-              <a v-on:click="$emit('play-or-browse', file)">{{ file.name }}</a>
+           <li class="list-group-item">
+              <div class="btn-group btn-group-justificed" role="group" aria-label="Song listing">
+                <div class="btn-group" role="group">
+                  <a role="button" v-on:click="$emit('queue', file.path)">
+                    <button type="button" class="btn btn-default">queue</button>
+                  </a>
+                </div>
+                <div class="btn-group">
+                  <a role="button" v-on:click="$emit('play-or-browse', file)">
+                    <button type="button" class="btn btn-default">{{ file.name }}</button>
+                  </a>
+                </div>
+              </div>
            </li>
   `
 })

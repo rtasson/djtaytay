@@ -35,3 +35,8 @@ audio.player {
   width: 100%;
   height: 100%;
 }
+
+img.logo {
+  height: 27px;
+  width: 27px;
+}
