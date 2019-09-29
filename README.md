@@ -10,13 +10,14 @@ apt install ffmpeg
 virtualenv --python=python3 virtualenv
 source virtualenv/bin/activate
 pip install -r requirements.txt
-python ./app.py
+export MUSIC_DIR=$YOUR_PATH_HERE
+python ./djtaytay.py
 ```
 and [click here](http://127.0.0.1:5000/static/browse.html).
 
 ## Todo
 * add authentication
-* add client-side queueing, ie playlists
+* add nice playlist functionality
 * stick it in a docker file, with specific volumes mounted
 * handle failures better
 * actually style this bad boy
