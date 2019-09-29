@@ -18,7 +18,7 @@
         <error v-bind:message="error" v-on:click.native="error=''"></error>
         <div id="browser">
           <ul>
-            <file v-for="file in files" v-bind:file="file"></file>
+            <file v-for="file in files" v-bind:file="file" v-bind:key="file.path" v-on:queue="queuePath($event)" v-on:play-or-browse="playOrBrowse($event)"></file>
           </ul>
         </div>
       </main>

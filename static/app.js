@@ -10,17 +10,23 @@ Vue.component('error', {
 Vue.component('player', {
   props: ['track'],
   template: `
-    <audio controls class="player" v-on:loadstart="handlePlayer()" v-if="track">
-      <source v-bind:src="'/play?path=' + track" type="audio/webm">
+    <audio controls class="player" v-on:loadstart="handlePlayer()">
+      <source v-bind:src="'/play?path=' + track" type="audio/webm" v-if="track">
     </audio>
   `,
+  watch: {
+    track: function (val) {
+      var aud = document.querySelector("audio.player");
+      aud.load();
+    }
+  },
   data: function () {
     return {
       handlePlayer: function () {
         var aud = document.querySelector("audio.player");
-        aud.play()
+        aud.play();
         aud.onended = function() {
-          app.current_track = ""
+          app.shiftQueue();
         }
       }
     }
@@ -31,25 +37,10 @@ Vue.component('file', {
   props: ['file'],
   template: `
            <li>
-              <a v-on:click="playOrBrowse(file)">{{ file.name }}</a>
-           </li>`,
-  data: function () {
-    return {
-      playOrBrowse: function (file) {
-        if (file.type == 'dir') {
-          app.getBrowsableList(file.path)
-        } else if (file.type == 'file') {
-          if (app.current_track != "") {
-            var aud = document.querySelector("audio.player");
-            aud.stop()
-          }
-          app.current_track = file.path
-        } else {
-          app.error = "Unexpected type: " + file.type
-        }
-      }
-    }
-  }
+              <a v-on:click="$emit('queue', file.path)">[queue]</a>
+              <a v-on:click="$emit('play-or-browse', file)">{{ file.name }}</a>
+           </li>
+  `
 })
 
 var app = new Vue({
@@ -58,6 +49,7 @@ var app = new Vue({
     files: {},
     error: "",
     current_track: "",
+    queue: []
   },
   methods: {
     getBrowsableList: function (path) {
@@ -76,7 +68,26 @@ var app = new Vue({
         .catch(err => {
           console.log(err)
         })
-    }
+    },
+    playOrBrowse: function (file) {
+      if (file.type == 'dir') {
+        app.getBrowsableList(file.path)
+      } else if (file.type == 'file') {
+        app.current_track = file.path;
+      } else {
+        app.error = "Unexpected type: " + file.type;
+      }
+    },
+    queuePath: function (path) {
+      app.queue.push(path)
+    },
+    shiftQueue: function () {
+      if (app.queue.length != 0) {
+        app.current_track = app.queue.shift();
+      } else {
+        app.current_track = ""
+      }
+    },
   }
 })
 
