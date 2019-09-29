@@ -1,7 +1,6 @@
 import json
 import ffmpeg
 import os.path
-import tempfile
 
 from pathlib import Path
 from flask import Response
@@ -49,24 +48,20 @@ def transcode(path):
     """transcode(path)
 
     This function is a generator. It will asyncronously begin transcoding
-    the file at `path` into a temporary file and then yield the contents
-    of that file 128 bytes at a time. If there is nothing to read,
+    the file at `path` to its stdout and then yield the contents
+    of the pipe 128 bytes at a time. If there is nothing to read,
     the transcoder is checked to see if it has exited, and if it has
     the function returns.
 
     """
-    handle, tmp = tempfile.mkstemp(prefix='djtaytay')
-    os.close(handle)
     process = (
         ffmpeg
             .input(path)
-            .output(tmp, format='webm', acodec='libvorbis', ac=1, ar='196k')
-            .overwrite_output()
-            .run_async()
+            .output('pipe:', format='webm', acodec='libvorbis', aq='6')
+            .run_async(pipe_stdout=True)
     )
-    file = open(tmp, mode='rb')
     while True:
-        data = file.read(128)
+        data = process.stdout.read(128)
         if not data:
             process.poll()
             if process.returncode == None:
@@ -75,11 +70,8 @@ def transcode(path):
                 # TODO: Do something better here :(
                 return
             else:
-                file.close()
-                os.remove(tmp)
                 break
         yield data
-    os.remove(tmp)
 
 def directory_listing(path):
     """directory_listing(path)

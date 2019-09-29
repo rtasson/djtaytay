@@ -101,16 +101,5 @@ class TestGetCompletePathFunction(unittest.TestCase):
                 self.root_dir
             )
 
-'''
-class TestTranscodeFunctions(unittest.TestCase):
-    # Test that transcode() cleans up after itself.
-    # This testcase will fail if there are currently
-    # files in the temp directory with our static
-    # prefix, 'djtaytay' - ie, if tracks are currently
-    # being transcoded or were previously abandoned.
-    def test_transcode_cleanup(self):
-        # Currently looking for a properly-licensed clip
-'''
-
 if __name__ == '__main__':
     unittest.main()
