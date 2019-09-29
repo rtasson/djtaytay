@@ -3,6 +3,7 @@ import ffmpeg
 import os.path
 import tempfile
 
+from pathlib import Path
 from flask import Response
 
 try:
@@ -33,16 +34,16 @@ def get_complete_path(path, root):
 
     """
     raw_path = root + "/" + path.lstrip('/')
-    abs_path = os.path.abspath(raw_path)
+    real_path = str(Path(raw_path).resolve())
 
     # if the computed path is not in the root path...
-    if os.path.commonpath([abs_path, root]) != root:
+    if os.path.commonpath([real_path, root]) != root:
         err_msg = "Path {} is not in {}".format(path, root)
         ex = ValueError()
         ex.strerror = err_msg
         raise ex
 
-    return abs_path
+    return real_path
 
 def transcode(path):
     """transcode(path)

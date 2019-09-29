@@ -33,37 +33,72 @@ class TestErrorFunction(unittest.TestCase):
                 )
 
 class TestGetCompletePathFunction(unittest.TestCase):
-    _temp_dir = None
-    temp_file_name = None
-    temp_file_handle = None
-    temp_file_abs_path = None
+    '''
+    This test case exercises the get_complete_path() function,
+    which is both responsible for resolving the complete path of
+    a file relative to the configured root directory, as well as
+    validating that it hasn't escaped the root directory. The
+    fixtures below generate a file tree like so:
+
+    ```
+    parent_dir/
+    ├── bad
+    └── root
+        ├── good
+        └── symlink_to_bad -> ../bad
+    ```
+
+    `root` represents the configured `MUSIC_DIR`. We expect
+    get_complete_path() to access `parent_dir/root/good` fine,
+    but to raise an exception while attempting to access both
+    `bad` and `symlink_to_bad`.
+    '''
 
     @classmethod
     def setUpClass(self):
-        self.temp_dir = tempfile.mkdtemp()
-        self.temp_file_handle, self.temp_file_abs_path = tempfile.mkstemp(dir=self.temp_dir)
-        self.temp_file_name = os.path.basename(self.temp_file_abs_path)
+        self.parent_dir = tempfile.mkdtemp()
+        self.root_dir = tempfile.mkdtemp(dir=self.parent_dir)
+        self.good_file_handle, self.good_file_abs_path = tempfile.mkstemp(dir=self.root_dir)
+        self.good_file_name = os.path.basename(self.good_file_abs_path)
+        self.bad_file_handle, self.bad_file_abs_path = tempfile.mkstemp(dir=self.parent_dir)
+        self.bad_file_name = os.path.basename(self.bad_file_abs_path)
+        self.symlink_to_bad_name = "symlink_to_bad"
+        self.symlink_to_bad_path = self.root_dir + "/symlink_to_bad"
+        os.symlink(self.bad_file_abs_path, self.symlink_to_bad_path)
 
     @classmethod
     def tearDownClass(self):
-        os.close(self.temp_file_handle)
-        os.remove(self.temp_file_abs_path)
-        os.rmdir(self.temp_dir)
+        os.close(self.good_file_handle)
+        os.remove(self.good_file_abs_path)
+        os.remove(self.symlink_to_bad_path)
+        os.rmdir(self.root_dir)
+        os.close(self.bad_file_handle)
+        os.remove(self.bad_file_abs_path)
+        os.rmdir(self.parent_dir)
 
     # Test that the function can reconstruct complete paths
     def test_valid_complete_path(self):
         self.assertEqual(
-            util.get_complete_path(self.temp_file_name, self.temp_dir),
-            self.temp_file_abs_path
+            util.get_complete_path(self.good_file_name, self.root_dir),
+            self.good_file_abs_path
         )
 
     # Test that the function raises an exception when the computed
-    # path is outside the "root" path
-    def test_root_escape(self):
+    # path is outside the "root" path due to a relative file name
+    def test_root_relative_escape(self):
         with self.assertRaises(ValueError):
             util.get_complete_path(
-                "../" + self.temp_file_name,
-                self.temp_dir
+                "../" + self.bad_file_name,
+                self.root_dir
+            )
+
+    # Test that the function raises an exception when the computed
+    # path is outside the "root" path due to a symlink
+    def test_root_symlink_escape(self):
+        with self.assertRaises(ValueError):
+            util.get_complete_path(
+                self.symlink_to_bad_name,
+                self.root_dir
             )
 
 '''
