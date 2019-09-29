@@ -8,33 +8,19 @@
   </head>
   <body>
     <div id="app">
-
       <header>
         <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
           <a class="navbar-brand" href="#"><img src="/static/favicon.png" class="logo" /> dj taytay</a>
         </nav>
       </header>
-
-      <main class="container" role="main">
-        <!-- TODO: emit a custom event below instead of v-on:click.native -->
-        <error v-bind:message="error" v-on:click.native="error=''"></error>
-        <div id="browser">
-          <ul class="list-group">
-            <file v-for="file in files" v-bind:file="file" v-bind:key="file.path" v-on:queue="queuePath($event)" v-on:play-or-browse="playOrBrowse($event)"></file>
-          </ul>
-        </div>
-      </main>
-
+      <div id="content">
+        {% block content %}{% endblock %}
+      </div>
       <footer class="footer">
-        <div class="container fixed-bottom">
-          <div class="player">
-            <player v-bind:track="current_track"></track>
-          </div>
-        </div>
       </footer>
     </div>
     <!-- development version, includes helpful console warnings -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="app.js"></script>
+    <script src="/static/app.js"></script>
   </body>
 </html>

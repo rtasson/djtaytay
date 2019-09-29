@@ -105,3 +105,7 @@ def directory_listing(path):
         listing.append(file)
     return listing
 
+def valid_login(username, password):
+    # Not implemented :(
+    print("\nso logged in\n")
+    return True
