@@ -6,12 +6,12 @@ from pathlib import Path
 from flask import Response
 
 try:
-    root = os.path.abspath(os.environ['MUSIC_DIR'])
+    admin_password = os.environ['ADMIN_PASSWORD']
 except:
-    print("Must specify a MUSIC_DIR environment variable.")
+    print("Must specify an ADMIN_PASSWORD environment variable.")
     exit(1)
 
-def error(message):
+def error(message, code=400):
     """error(message)
 
     Helper function to print to stdout and return `message` in
@@ -19,9 +19,8 @@ def error(message):
 
     """
     # TODO: use Flask's logging
-    print("Error: {}".format(message))
     response = json.dumps({"error": message})
-    return Response(response, 400, mimetype='application/json')
+    return Response(response, code, mimetype='application/json')
 
 def get_complete_path(path, root):
     """get_complete_path(path, root)
@@ -73,8 +72,8 @@ def transcode(path):
                 break
         yield data
 
-def directory_listing(path):
-    """directory_listing(path)
+def directory_listing(path, root):
+    """directory_listing(path, root)
 
     This function constructs a dict representing a directory's
     contents and returns it. If the path is not a directory,
@@ -106,6 +105,7 @@ def directory_listing(path):
     return listing
 
 def valid_login(username, password):
-    # Not implemented :(
-    print("\nso logged in\n")
-    return True
+    if username == "admin" and password == admin_password:
+        return True
+    else:
+        return False
