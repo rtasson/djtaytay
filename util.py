@@ -4,6 +4,9 @@ import os.path
 
 from pathlib import Path
 from flask import Response
+from dotenv import load_dotenv
+
+load_dotenv()
 
 try:
     admin_password = os.environ['ADMIN_PASSWORD']

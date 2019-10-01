@@ -10,9 +10,9 @@ apt install ffmpeg
 virtualenv --python=python3 virtualenv
 source virtualenv/bin/activate
 pip install -r requirements.txt
-export MUSIC_DIR=$YOUR_PATH_HERE
-export SECRET_KEY="$(python -c 'import os; print(os.urandom(16))')"
-export ADMIN_PASSWORD="super secret password unicorn"
+echo "export MUSIC_DIR=$YOUR_PATH_HERE" >> .env
+echo "export SECRET_KEY=$(python -c 'import os; print(os.urandom(16))')" >> .env
+echo "export ADMIN_PASSWORD='super secret password unicorn' >> .env"
 python ./djtaytay.py
 ```
 and [click here](http://127.0.0.1:5000/); default username is `admin`, password is the `ADMIN_PASSWORD` variable above.

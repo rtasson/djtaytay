@@ -1,6 +1,8 @@
 import json
 import os.path
 
+from dotenv import load_dotenv
+
 from flask import Flask, request, Response, session, redirect, url_for
 from flask import render_template, abort
 
@@ -9,6 +11,7 @@ from util import valid_login
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+load_dotenv()
 
 try:
     root = os.path.abspath(os.environ['MUSIC_DIR'])
