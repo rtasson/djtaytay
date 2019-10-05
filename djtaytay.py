@@ -51,16 +51,17 @@ def stream_file():
         return abort(401)
     else:
         if not request.args['path']:
-            err_msg = "Not a streamable path: {}".format(requests.args['path'])
-            app.logger.warning(err_msg)
-            return error(err_msg)
+            log_msg = "Not a streamable path: {}".format(requests.args['path'])
+            app.logger.warning(log_msg)
+            return error("Could not stream")
 
         # Validate path and construct an absolute path
         try:
             path = get_complete_path(request.args['path'], root)
         except Exception as e:
-            app.logger.warning(str(e))
-            return error(str(e))
+            log_msg = "Error in get_complete_path: {}".format(str(e))
+            app.logger.warning(log_msg)
+            return error("Could not stream")
 
         return Response(transcode(path), mimetype='audio/webm')
 
@@ -75,15 +76,19 @@ def file_listing():
         try:
             path = get_complete_path(request.args.get("path", "/"), root)
         except Exception as e:
-            app.logger.warning(str(e))
-            return error(str(e))
+            msg = "Error in get_complete_path: {}".format(str(e))
+            app.logger.warning(msg)
+            return error("Could not browse")
 
         try:
             listing = json.dumps(directory_listing(path, root))
             return Response(listing, mimetype='application/json')
         except Exception as e:
-            app.logger.error(str(e))
-            return error(str(e))
+            msg = "Error in directory_listing: {}".format(str(e))
+            app.logger.error(msg)
+            msg = "path: {}, root: {}".format(path, root)
+            app.logger.error(msg)
+            return error("Could not browse")
 
 
 if __name__ == '__main__':
