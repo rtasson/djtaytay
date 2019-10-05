@@ -11,7 +11,7 @@ Vue.component('player', {
   props: ['track'],
   template: `
     <audio controls class="player" v-on:loadstart="handlePlayer()">
-      <source v-bind:src="'/play?path=' + track" type="audio/webm" v-if="track">
+      <source v-bind:src="'play?path=' + track" type="audio/webm" v-if="track">
     </audio>
   `,
   watch: {
@@ -64,7 +64,7 @@ var app = new Vue({
   methods: {
     getBrowsableList: function (path) {
       encodedPath = encodeURIComponent(path);
-      fetch("/browse?path=" + encodedPath,
+      fetch("browse?path=" + encodedPath,
         {credentials: 'same-origin', mode: 'same-origin', redirect: 'follow'}
         ).then(response => {
           return response.json()

@@ -40,8 +40,7 @@ def get_complete_path(path, root):
     # if the computed path is not in the root path...
     if os.path.commonpath([real_path, root]) != root:
         err_msg = "Path {} is not in {}".format(path, root)
-        ex = ValueError()
-        ex.strerror = err_msg
+        ex = ValueError(err_msg)
         raise ex
 
     return real_path

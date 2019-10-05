@@ -11,6 +11,7 @@ from util import valid_login
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.config['APPLICATION_ROOT'] = os.getenv('APPLICATION_ROOT', '')
 load_dotenv()
 
 try:
@@ -86,4 +87,4 @@ def file_listing():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.getenv('DEBUG', False))
