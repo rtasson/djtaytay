@@ -4,18 +4,18 @@ This is a little toy app made to explore Vue, brush up on my Python, and make a 
 This is an active work in progress. Notably, it needs better authentication, validation against the user input to ffmpeg, and better UI controls.
 
 ## How to set up a test environment
+Prerequisites:
+ * Linux (may work on OS X, untested)
+ * Docker
+
 Clone this repo, then
 ```
-apt install ffmpeg
-virtualenv --python=python3 virtualenv
-source virtualenv/bin/activate
-pip install -r requirements.txt
 echo "export MUSIC_DIR=$YOUR_PATH_HERE" >> .env
 echo "export SECRET_KEY=$(python -c 'import os; print(os.urandom(16))')" >> .env
 echo "export ADMIN_PASSWORD='super secret password unicorn' >> .env"
-python ./djtaytay.py
+./run.sh
 ```
-and [click here](http://127.0.0.1:5000/); default username is `admin`, password is the `ADMIN_PASSWORD` variable above.
+and [click here](http://127.0.0.1:8000/); default username is `admin`, password is the `ADMIN_PASSWORD` variable above.
 
 ## Notes on production deployment
 This service works by transcoding media files in memory and serving the content through an HTML5 `<audio>` tag. Some browsers will not even attempt to load most of the contents of a stream like this at once, instead opting to stream it in as needed. Long streams like this do not play nicely with Flask's debug webserver; it is highly recommended to run this behind a real WSGI server, like gunicorn. If you find that your streams are being served incompletely, set the `--timeout` value to a somewhat higher value, like 150 seconds.
