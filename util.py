@@ -58,7 +58,7 @@ def transcode(path):
     process = (
         ffmpeg
             .input(path)
-            .output('pipe:', format='webm', acodec='libvorbis', aq='5')
+            .output('pipe:', format='webm', acodec='libvorbis', aq='6')
             .run_async(pipe_stdout=True)
     )
     while True:
