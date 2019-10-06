@@ -18,11 +18,16 @@ body {
   background-color: #f5f5f5;
 }
 
-body > div#app > div#content > .container {
-  padding: 60px 15px 0;
+main.container {
+  padding: 60px 15px 0px;
+}
+
+.container.fixed-bottom {
+  padding: 0px 15px 0px;
 }
 
 .footer > .container {
+  padding-top: 0px;
   padding-right: 15px;
   padding-left: 15px;
 }
