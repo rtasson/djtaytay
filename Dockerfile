@@ -16,4 +16,4 @@ RUN             /usr/bin/pip3 install -r requirements.txt
 COPY            . .
 
 EXPOSE          8000
-CMD             ["gunicorn", "--workers=4", "--worker-class=eventlet", "--bind=0.0.0.0:8000", "djtaytay:app"]
+CMD             ["gunicorn", "--workers=15", "--worker-class=eventlet", "--bind=0.0.0.0:8000", "--timeout=150", "djtaytay:app"]

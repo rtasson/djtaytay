@@ -58,7 +58,7 @@ def transcode(path):
     process = (
         ffmpeg
             .input(path)
-            .output('pipe:', format='webm', acodec='libvorbis', aq='6')
+            .output('pipe:', format='webm', acodec='libvorbis', aq='5')
             .run_async(pipe_stdout=True)
     )
     while True:
@@ -73,6 +73,7 @@ def transcode(path):
             else:
                 break
         yield data
+    process.communicate()
 
 def directory_listing(path, root):
     """directory_listing(path, root)

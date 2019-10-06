@@ -10,7 +10,7 @@ Vue.component('error', {
 Vue.component('player', {
   props: ['track'],
   template: `
-    <audio controls class="player" v-on:loadstart="handlePlayer()">
+    <audio controls class="player" preload="auto" v-on:loadstart="handlePlayer()">
       <source v-bind:src="'play?path=' + track" type="audio/webm" v-if="track">
     </audio>
   `,
