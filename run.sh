@@ -5,6 +5,7 @@ source .env
 
 if [ "${MUSIC_DIR}" == "" ]; then
   echo "Please set your MUSIC_DIR env var"
+  exit 1
 fi
 
 docker build -t djtaytay:latest .
