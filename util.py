@@ -22,8 +22,10 @@ import ffmpeg
 import os.path
 
 from pathlib import Path
-from flask import Response
+from functools import wraps
+from tinytag import TinyTag
 from dotenv import load_dotenv
+from flask import abort, session, Response
 
 load_dotenv()
 
@@ -32,6 +34,14 @@ try:
 except:
     print("Must specify an ADMIN_PASSWORD environment variable.")
     exit(1)
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+            if 'authenticated' not in session:
+               abort(401)
+            return f(*args, **kwargs)
+    return decorated_function
 
 def error(message, code=400):
     """error(message)
@@ -131,3 +141,10 @@ def valid_login(username, password):
         return True
     else:
         return False
+
+def get_metadata(file):
+    f = TinyTag.get(file)
+    if f == None:
+        raise ValueError("Could not decode media")
+    result = {"artist": f.artist, "album": f.album, "title": f.title}
+    return json.dumps(result)

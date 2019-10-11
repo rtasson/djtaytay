@@ -26,7 +26,7 @@ from flask import Flask, request, Response, session, redirect, url_for
 from flask import render_template, abort
 
 from util import error, get_complete_path, directory_listing, transcode
-from util import valid_login
+from util import valid_login, get_metadata, login_required
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -65,50 +65,63 @@ def login():
 
 # TODO: Handle failure cases; see if path is safe to try to transcode
 @app.route('/play')
+@login_required
 def stream_file():
-    if 'authenticated' not in session:
-        return abort(401)
-    else:
-        if not request.args['path']:
-            log_msg = "Not a streamable path: {}".format(requests.args['path'])
-            app.logger.warning(log_msg)
-            return error("Could not stream")
+    if not request.args['path']:
+        log_msg = "Not a streamable path: {}".format(requests.args['path'])
+        app.logger.warning(log_msg)
+        return error("Could not stream")
 
-        # Validate path and construct an absolute path
-        try:
-            path = get_complete_path(request.args['path'], root)
-        except Exception as e:
-            log_msg = "Error in get_complete_path: {}".format(str(e))
-            app.logger.warning(log_msg)
-            return error("Could not stream")
+    # Validate path and construct an absolute path
+    try:
+        path = get_complete_path(request.args['path'], root)
+    except Exception as e:
+        log_msg = "Error in get_complete_path: {}".format(str(e))
+        app.logger.warning(log_msg)
+        return error("Could not stream")
 
-        return Response(transcode(path), mimetype='audio/webm')
+    return Response(transcode(path), mimetype='audio/webm')
 
 
 @app.route("/browse")
+@login_required
 def file_listing():
-    if 'authenticated' not in session:
-        app.logger.warning("Unauthenticated file_listing() call")
-        return error("It appears you've been logged out; please log back in.", 401)
-    else:
-        # Validate path and construct an absolute path
-        try:
-            path = get_complete_path(request.args.get("path", "/"), root)
-        except Exception as e:
-            msg = "Error in get_complete_path: {}".format(str(e))
-            app.logger.warning(msg)
-            return error("Could not browse")
+    # Validate path and construct an absolute path
+    try:
+        path = get_complete_path(request.args.get("path", "/"), root)
+    except Exception as e:
+        msg = "Error in get_complete_path: {}".format(str(e))
+        app.logger.warning(msg)
+        return error("Could not browse")
 
-        try:
-            listing = json.dumps(directory_listing(path, root))
-            return Response(listing, mimetype='application/json')
-        except Exception as e:
-            msg = "Error in directory_listing: {}".format(str(e))
-            app.logger.error(msg)
-            msg = "path: {}, root: {}".format(path, root)
-            app.logger.error(msg)
-            return error("Could not browse")
+    try:
+        listing = json.dumps(directory_listing(path, root))
+        return Response(listing, mimetype='application/json')
+    except Exception as e:
+        msg = "Error in directory_listing: {}".format(str(e))
+        app.logger.error(msg)
+        msg = "path: {}, root: {}".format(path, root)
+        app.logger.error(msg)
+        return error("Could not browse")
 
+@app.route("/metadata")
+@login_required
+def metadata():
+    # Validate path and construct an absolute path
+    try:
+        path = get_complete_path(request.args.get("path", "/"), root)
+    except Exception as e:
+        msg = "Error in get_complete_path: {}".format(str(e))
+        app.logger.warning(msg)
+        return error("Could not browse")
+
+    try:
+        result = get_metadata(path)
+        return Response(result, mimetype='application/json')
+    except Exception as e:
+        msg = "Error getting metadata: {}".format(str(e))
+        app.logger.error(msg)
+        return error("Could not retrieve metadata")
 
 if __name__ == '__main__':
     app.run(debug=os.getenv('DEBUG', False))
