@@ -18,8 +18,11 @@ along with djtaytay.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 import json
+import flask
 import os.path
+import werkzeug
 
+from typing import Union
 from dotenv import load_dotenv
 
 from flask import Flask, request, Response, session, redirect, url_for
@@ -48,27 +51,26 @@ except:
     exit(1)
 
 @app.route('/')
-def index():
+def index() -> Union[werkzeug.wrappers.Response, flask.wrappers.Response]:
     if 'authenticated' not in session:
         return redirect(url_for('login'))
     else:
-        return render_template('index.html.j2')
+        return Response(render_template('index.html.j2'))
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login() ->  Union[werkzeug.wrappers.Response, flask.wrappers.Response]:
     if request.method == 'POST':
         if valid_login(request.form['username'], request.form['password']):
             session['authenticated'] = True
             return redirect(url_for('index'))
-        return render_template('login.html.j2')
-    return render_template('login.html.j2')
+    return Response(render_template('login.html.j2'))
 
 # TODO: Handle failure cases; see if path is safe to try to transcode
 @app.route('/play')
 @login_required
-def stream_file():
+def stream_file() -> Response:
     if not request.args['path']:
-        log_msg = "Not a streamable path: {}".format(requests.args['path'])
+        log_msg = "Not a streamable path: {}".format(request.args['path'])
         app.logger.warning(log_msg)
         return error("Could not stream")
 
@@ -85,7 +87,7 @@ def stream_file():
 
 @app.route("/browse")
 @login_required
-def file_listing():
+def file_listing() -> Response:
     # Validate path and construct an absolute path
     try:
         path = get_complete_path(request.args.get("path", "/"), root)
@@ -106,7 +108,7 @@ def file_listing():
 
 @app.route("/metadata")
 @login_required
-def metadata():
+def metadata() -> Response:
     # Validate path and construct an absolute path
     try:
         path = get_complete_path(request.args.get("path", "/"), root)
@@ -116,7 +118,7 @@ def metadata():
         return error("Could not browse")
 
     try:
-        result = get_metadata(path)
+        result = json.dumps(get_metadata(path))
         return Response(result, mimetype='application/json')
     except Exception as e:
         msg = "Error getting metadata: {}".format(str(e))
@@ -124,4 +126,8 @@ def metadata():
         return error("Could not retrieve metadata")
 
 if __name__ == '__main__':
-    app.run(debug=os.getenv('DEBUG', False))
+    if os.getenv('DEBUG', False) == True:
+        debug = True
+    else:
+        debug = False
+    app.run(debug=debug)

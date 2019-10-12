@@ -25,6 +25,7 @@ from pathlib import Path
 from functools import wraps
 from tinytag import TinyTag
 from dotenv import load_dotenv
+from typing import List, Dict, Any
 from flask import abort, session, Response
 
 load_dotenv()
@@ -43,8 +44,8 @@ def login_required(f):
             return f(*args, **kwargs)
     return decorated_function
 
-def error(message, code=400):
-    """error(message)
+def error(message: str, code: int = 400) -> Response:
+    """
 
     Helper function to print to stdout and return `message` in
     a JSON blob in a Flask Response.
@@ -54,8 +55,8 @@ def error(message, code=400):
     response = json.dumps({"error": message})
     return Response(response, code, mimetype='application/json')
 
-def get_complete_path(path, root):
-    """get_complete_path(path, root)
+def get_complete_path(path: str, root: str) -> str:
+    """
 
     This function generates an absolute path from the base directory
     and the provided path and validates that it is within the base
@@ -74,8 +75,10 @@ def get_complete_path(path, root):
 
     return real_path
 
-def transcode(path):
-    """transcode(path)
+# TODO: Flask's type annotations for the Response object don't include
+# the Generator type, but that's what this function is; dig into this.
+def transcode(path: str):
+    """
 
     This function is a generator. It will asyncronously begin transcoding
     the file at `path` to its stdout and then yield the contents
@@ -104,8 +107,8 @@ def transcode(path):
         yield data
     process.communicate()
 
-def directory_listing(path, root):
-    """directory_listing(path, root)
+def directory_listing(path: str, root: str) -> List[Dict[str, str]]:
+    """
 
     This function constructs a dict representing a directory's
     contents and returns it. If the path is not a directory,
@@ -113,8 +116,7 @@ def directory_listing(path, root):
 
     """
     if not os.path.isdir(path):
-        ex = ValueError()
-        ex.strerror = "Not a directory: {}".format(path)
+        ex = ValueError("Not a directory: {}".format(path))
         raise ex
 
     listing = [
@@ -136,15 +138,15 @@ def directory_listing(path, root):
         listing.append(file)
     return listing
 
-def valid_login(username, password):
+def valid_login(username: str, password: str) -> bool:
     if username == "admin" and password == admin_password:
         return True
     else:
         return False
 
-def get_metadata(file):
+def get_metadata(file: str) -> Dict[str, Any]:
     f = TinyTag.get(file)
     if f == None:
         raise ValueError("Could not decode media")
     result = {"artist": f.artist, "album": f.album, "title": f.title}
-    return json.dumps(result)
+    return result
