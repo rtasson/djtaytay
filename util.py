@@ -25,6 +25,7 @@ from pathlib import Path
 from functools import wraps
 from tinytag import TinyTag
 from dotenv import load_dotenv
+from hmac import compare_digest
 from typing import List, Dict, Any
 from flask import abort, session, Response
 
@@ -139,12 +140,23 @@ def directory_listing(path: str, root: str) -> List[Dict[str, str]]:
     return listing
 
 def valid_login(username: str, password: str) -> bool:
-    if username == "admin" and password == admin_password:
+    '''
+
+    Returns True if the login is valid, and False otherwise.
+
+    '''
+    if username == "admin" and compare_digest(password, admin_password):
         return True
     else:
         return False
 
 def get_metadata(file: str) -> Dict[str, Any]:
+    '''
+
+    Returns a Dict describing a music file's tag data, ie
+    artist, album, track title.
+
+    '''
     f = TinyTag.get(file)
     if f == None:
         raise ValueError("Could not decode media")
