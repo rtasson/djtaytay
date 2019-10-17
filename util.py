@@ -23,11 +23,11 @@ import os.path
 
 from pathlib import Path
 from functools import wraps
-from tinytag import TinyTag
 from dotenv import load_dotenv
 from hmac import compare_digest
 from typing import List, Dict, Any
 from flask import abort, session, Response
+from tinytag import TinyTag, TinyTagException
 
 load_dotenv()
 
@@ -115,6 +115,9 @@ def directory_listing(path: str, root: str) -> List[Dict[str, str]]:
     contents and returns it. If the path is not a directory,
     a ValueError is raised.
 
+    `path` contains the entire file path including root.
+    `root` specifies the part of the path that is the root.
+
     """
     if not os.path.isdir(path):
         ex = ValueError("Not a directory: {}".format(path))
@@ -131,12 +134,22 @@ def directory_listing(path: str, root: str) -> List[Dict[str, str]]:
     # TODO: omit hidden files
     for i in os.scandir(path=path):
         type = "file" if i.is_file() else "dir"
+
+        # TODO: make this into a class
         file = {
             "name": i.name,
             "path": i.path[len(root):],
             "type": type
         }
-        listing.append(file)
+
+        try:
+          metadata = get_metadata(i.path) if i.is_file() else {}
+        except TinyTagException:
+          metadata = {}
+
+        # The below syntax merges the dicts, with `file` overriding
+        # any keys set in `metadata`.
+        listing.append({**metadata, **file})
     return listing
 
 def valid_login(username: str, password: str) -> bool:

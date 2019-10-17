@@ -11,7 +11,7 @@ Vue.component('player', {
   props: ['track'],
   template: `
     <audio controls class="player" preload="auto" v-on:loadstart="handlePlayer()">
-      <source v-bind:src="'play?path=' + track" type="audio/webm" v-if="track">
+      <source v-bind:src="'play?path=' + track.path" type="audio/webm" v-if="track">
     </audio>
   `,
   watch: {
@@ -26,7 +26,7 @@ Vue.component('player', {
         var aud = document.querySelector("audio.player");
         aud.play();
         aud.onended = function() {
-          app.shiftQueue();
+          app.nextTrack();
         }
       }
     }
@@ -36,30 +36,49 @@ Vue.component('player', {
 Vue.component('file', {
   props: ['file'],
   template: `
-           <li class="list-group-item">
-              <div class="btn-group btn-group-justificed" role="group" aria-label="Song listing">
-                <div class="btn-group" role="group">
-                  <a role="button" v-on:click="$emit('queue', file.path)">
-                    <button type="button" class="btn btn-default">queue</button>
-                  </a>
-                </div>
-                <div class="btn-group">
-                  <a role="button" v-on:click="$emit('play-or-browse', file)">
-                    <button type="button" class="btn btn-default">{{ file.name }}</button>
-                  </a>
-                </div>
-              </div>
-           </li>
+    <li class="list-group-item">
+      <div class="btn-group btn-group-justificed" role="group" aria-label="Song listing">
+        <div class="btn-group" role="group">
+          <a role="button" v-on:click="$emit('queue', file)">
+            <button type="button" class="btn btn-default">queue</button>
+          </a>
+        </div>
+        <div class="btn-group">
+          <a role="button" v-on:click="$emit('play-or-browse', file)">
+            <button type="button" class="btn btn-default">{{ file.name }}</button>
+          </a>
+        </div>
+      </div>
+    </li>
   `
 })
 
 var app = new Vue({
   el: 'div#app',
   data: {
-    files: {},
+    files: [],
     error: "",
-    current_track: "",
+    current_track_index: 0,
     queue: []
+  },
+  computed: {
+    current_track: function () {
+      if (this.queue.length > this.current_track_index) {
+        return this.queue[this.current_track_index];
+      } else {
+        return;
+      }
+    },
+    track_info: function () {
+      if (this.queue.length > 0) {
+        result = this.queue[this.current_track_index].title;
+        result = result.concat(" by ");
+        result = result.concat(this.queue[this.current_track_index].artist);
+        return result;
+      } else  {
+        return "";
+      }
+    }
   },
   methods: {
     getBrowsableList: function (path) {
@@ -71,9 +90,9 @@ var app = new Vue({
         })
         .then(results => {
           if(!("error" in results)) {
-            app.files = results
+            this.files = results
           } else {
-            app.error = results.error
+            this.error = results.error
           }
         })
         .catch(err => {
@@ -82,21 +101,22 @@ var app = new Vue({
     },
     playOrBrowse: function (file) {
       if (file.type == 'dir') {
-        app.getBrowsableList(file.path)
+        this.getBrowsableList(file.path)
       } else if (file.type == 'file') {
-        app.current_track = file.path;
+        this.queue = [file];
+        this.current_track_index = 0;
       } else {
-        app.error = "Unexpected type: " + file.type;
+        this.error = "Unexpected type: " + file.type;
       }
     },
     queuePath: function (path) {
-      app.queue.push(path)
+      this.queue.push(path)
     },
-    shiftQueue: function () {
-      if (app.queue.length != 0) {
-        app.current_track = app.queue.shift();
+    nextTrack: function () {
+      if ((this.current_track_index + 1) < this.queue.length) {
+        this.current_track_index = this.current_track_index + 1;
       } else {
-        app.current_track = ""
+        this.current_track_index = 0
       }
     },
   }

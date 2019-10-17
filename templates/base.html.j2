@@ -16,7 +16,11 @@
       <div id="content">
         {% block content %}{% endblock %}
       </div>
+      <div class="container fixed-bottom">
+        {% block player %}{% endblock %}
+      </div>
       <footer class="footer">
+        {% block footer %}{% endblock %}
       </footer>
     </div>
     <!-- development version, includes helpful console warnings -->
