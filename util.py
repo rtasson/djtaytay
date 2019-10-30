@@ -24,18 +24,17 @@ import os.path
 from pathlib import Path
 from functools import wraps
 from dotenv import load_dotenv
-from hmac import compare_digest
+from models import User, Session
 from typing import List, Dict, Any
+from passlib.context import CryptContext
 from flask import abort, session, Response
 from tinytag import TinyTag, TinyTagException
 
 load_dotenv()
 
-try:
-    admin_password = os.environ['ADMIN_PASSWORD']
-except:
-    print("Must specify an ADMIN_PASSWORD environment variable.")
-    exit(1)
+password_context = CryptContext(
+    schemes = ['argon2']
+)
 
 def login_required(f):
     @wraps(f)
@@ -158,9 +157,16 @@ def valid_login(username: str, password: str) -> bool:
     Returns True if the login is valid, and False otherwise.
 
     '''
-    if username == "admin" and compare_digest(password, admin_password):
-        return True
-    else:
+    try:
+        db_session = Session()
+        db_hash = db_session.query(User.password_hash).filter(User.username == username).one().password_hash
+        if password_context.verify(password, db_hash):
+            return True
+        else:
+            print("Bad login attempt; username: {}".format(username))
+            return False
+    except Exception as e:
+        print("Exception encountered when checking login: {}".format(str(e)))
         return False
 
 def get_metadata(file: str) -> Dict[str, Any]:

@@ -62,6 +62,7 @@ def login() ->  Union[werkzeug.wrappers.Response, flask.wrappers.Response]:
     if request.method == 'POST':
         if valid_login(request.form['username'], request.form['password']):
             session['authenticated'] = True
+            session['username'] = request.form['username']
             return redirect(url_for('index'))
     return Response(render_template('login.html.j2'))
 
@@ -126,7 +127,7 @@ def metadata() -> Response:
         return error("Could not retrieve metadata")
 
 if __name__ == '__main__':
-    if os.getenv('DEBUG', False) == True:
+    if os.getenv('DEBUG', False) == 'True':
         debug = True
     else:
         debug = False
