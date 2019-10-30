@@ -1,7 +1,7 @@
 # Helper script to create the database on the first run.
 
 from os import getenv
-from cryptcontext import password_context
+from util import password_context
 from models import User, Session, Base, engine
 
 # Create schema
