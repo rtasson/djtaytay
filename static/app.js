@@ -37,7 +37,7 @@ Vue.component('file', {
   props: ['file'],
   template: `
     <li class="list-group-item">
-      <div class="btn-group btn-group-justificed" role="group" aria-label="Song listing">
+      <div class="btn-group" role="group" aria-label="Song listing">
         <div class="btn-group" role="group">
           <a role="button" v-on:click="$emit('queue', file)">
             <button type="button" class="btn btn-default">queue</button>
