@@ -13,6 +13,6 @@
 
 {% block player %}
 <div class="player">
-  <player v-bind:track="current_track"></track>
+  <player v-bind:track="current_track" v-on:next="nextTrack()" v-on:previous="previousTrack()"></track>
 </div>
 {% endblock %}

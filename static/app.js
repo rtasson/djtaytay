@@ -10,9 +10,19 @@ Vue.component('error', {
 Vue.component('player', {
   props: ['track'],
   template: `
-    <audio controls class="player" preload="auto" v-on:loadstart="handlePlayer()">
-      <source v-bind:src="'play?path=' + track.path" type="audio/webm" v-if="track">
-    </audio>
+    <div class="d-flex justify-content-between">
+      <div>
+        <button role="button" type="button" class="btn btn-sm" v-on:click="$emit('previous')"> << </button>
+      </div>
+      <div>
+        <audio controls class="player" preload="auto" v-on:loadstart="handlePlayer()">
+          <source v-bind:src="'play?path=' + track.path" type="audio/webm" v-if="track">
+        </audio>
+      </div>
+      <div>
+        <button type="button" class="btn btn-sm" role="button" v-on:click="$emit('next')"> >> </button>
+      </div>
+    </div>
   `,
   watch: {
     track: function (val) {
@@ -117,6 +127,13 @@ var app = new Vue({
         this.current_track_index = this.current_track_index + 1;
       } else {
         this.current_track_index = 0
+      }
+    },
+    previousTrack: function () {
+      if ((this.current_track_index - 1) >= 0) {
+        this.current_track_index = this.current_track_index - 1;
+      } else {
+        this.current_track_index = this.queue.length - 1;
       }
     },
   }
