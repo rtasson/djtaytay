@@ -1,5 +1,5 @@
 argon2-cffi==19.2.0
-cffi==1.13.2
+cffi==1.14.0
 Click==7.0
 dnspython==1.16.0
 eventlet==0.25.1
