@@ -2,7 +2,7 @@ argon2-cffi==19.2.0
 cffi==1.14.0
 Click==7.1.1
 dnspython==1.16.0
-eventlet==0.25.1
+eventlet==0.25.2
 ffmpeg-python==0.2.0
 Flask==1.1.2
 future==0.18.2
