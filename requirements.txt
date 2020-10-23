@@ -1,6 +1,6 @@
 argon2-cffi==19.2.0
 cffi==1.14.3
-Click==7.1.1
+Click==7.1.2
 dnspython==2.0.0
 eventlet==0.25.2
 ffmpeg-python==0.2.0
